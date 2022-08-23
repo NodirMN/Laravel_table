@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Rules\PhoneNumber;
 use Illuminate\Http\Request;
 
 class CompaniesController extends Controller
@@ -14,7 +15,7 @@ class CompaniesController extends Controller
      */
     public function index()
     {
-        $companies = Company::paginate(20);
+        $companies = Company::orderByDesc('created_at')->paginate(20);
         // dd($companies);
         return view('users.companies.index',[
             'companies' => $companies
@@ -28,7 +29,7 @@ class CompaniesController extends Controller
      */
     public function create()
     {
-        //
+        return view('users.companies.create');
     }
 
     /**
@@ -39,18 +40,36 @@ class CompaniesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $data = $request->validate([
+            'name' => 'required',
+            'address' => 'required',
+            'phone' => ['required',
+            'numeric', new PhoneNumber
+            ]
+        ]);
+        // dd($data);
+        Company::create($data);
+        // $company = new Company;
+        // $company->name = $data['name'];
+        // $company->address = $data['address'];
+        // $company->phone = $data['phone'];
+        // $company->save();
+
+        return redirect()->route('companies.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     *  * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Company $company)
     {
-        //
+        return view('users.companies.show',[
+            'company' => $company
+        ]);
     }
 
     /**
@@ -59,9 +78,11 @@ class CompaniesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Company $company)
     {
-        //
+        return view('users.companies.edit',[
+            'company' => $company
+        ]);
     }
 
     /**
@@ -71,9 +92,16 @@ class CompaniesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,  Company $company)
     {
-        //
+            $data = $request->validate([
+            'name' => 'required',
+            'address' => 'required',
+            'phone' => ['required',
+            'numeric', new PhoneNumber
+            ]]);
+            $company ->update($data);
+            return redirect()->route('companies.index');
     }
 
     /**

@@ -15,12 +15,12 @@ use App\Http\Controllers\CompaniesController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+        return view('companies');
+    });
+    Route::resource('companies', CompaniesController::class);
 
 
 // Route::get('/home',[HomeController::class,'index']);
 // Route::get('/members',[HomeController::class,'members']);
 // Route::get('/about',[HomeController::class,'about']);
 
-Route::resource('companies', CompaniesController::class);
